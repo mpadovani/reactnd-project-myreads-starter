@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import BooksGrid from './BooksGrid'
 import * as BooksAPI from './utils/BooksAPI'
+import { Link } from 'react-router-dom'
 
 class ListBooks extends Component {
   state = {
@@ -56,7 +57,7 @@ class ListBooks extends Component {
           </div>
 
           <div className="open-search">
-            <a>Add a book</a>
+            <Link to='/search'>Add Book</Link>
           </div>
         </div>
     )
