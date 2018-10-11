@@ -18,7 +18,8 @@ class BooksGrid extends Component {
                 <div className="book-top">
                   <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
                   <div className="book-shelf-changer">
-                    <select key={book.id} onChange={(e) => onChangeShelf(book, e.target.value)} value={book.shelf}>
+                    <select key={book.id} onChange={(e) => onChangeShelf(book, e.target.value)}
+                      value={(book.shelf) ? book.shelf : 'none'}>
                       <option value="move" disabled>Move to...</option>
                       <option value="currentlyReading">Currently Reading</option>
                       <option value="wantToRead">Want to Read</option>
@@ -28,7 +29,7 @@ class BooksGrid extends Component {
                   </div>
                 </div>
                 <div className="book-title">{book.title}</div>
-                <div className="book-authors">{book.authors[0]}</div>
+                <div className="book-authors">{(book.authors) ? book.authors.join(', ') : 'N/A'}</div>
               </div>
             </li>
           ))}
