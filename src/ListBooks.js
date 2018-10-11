@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import BooksGrid from './BooksGrid'
 import * as BooksAPI from './utils/BooksAPI'
 
@@ -15,7 +14,7 @@ class ListBooks extends Component {
   }
 
   onChangeShelf = (book, shelf) => {
-    var foundIndex = this.state.books.findIndex(x => x.id == book.id)
+    var foundIndex = this.state.books.findIndex(x => x.id === book.id)
     this.state.books[foundIndex].shelf = shelf
 
     this.setState((state) => ({
