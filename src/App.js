@@ -2,20 +2,42 @@ import React, { Component } from 'react';
 import { Route } from 'react-router-dom'
 import ListBooks from './ListBooks'
 import SearchBooks from './SearchBooks'
+import * as BooksAPI from './utils/BooksAPI'
 
 class App extends Component {
+  state = {
+    books: []
+  }
+
+  componentDidMount() {
+    BooksAPI.getAll().then((books) => {
+      this.setState({ books })
+    })
+  }
+
+  onChangeShelf = (book, shelf) => {
+    var foundIndex = this.state.books.findIndex(x => x.id === book.id)
+    this.state.books[foundIndex].shelf = shelf
+
+    this.setState((state) => ({
+      books: state.books
+    }))
+
+    BooksAPI.update(book, shelf);
+  }
+
   render() {
     return (
       <div className="app">
         <Route exact path='/' render={() => (
-          <ListBooks />
+          <ListBooks
+            onChangeShelf={this.onChangeShelf}
+            books={this.state.books}
+          />
         )}/>
         <Route path='/search' render={({ history }) => (
             <SearchBooks
-              onCreateContact={(contact) => {
-                this.createContact(contact)
-                history.push('/')
-              }}
+              onChangeShelf={this.onChangeShelf}
             />
         )}/>
       </div>

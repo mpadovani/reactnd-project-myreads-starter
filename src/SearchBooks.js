@@ -2,11 +2,17 @@ import React, { Component } from 'react';
 import BooksGrid from './BooksGrid'
 import * as BooksAPI from './utils/BooksAPI'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types';
+import { Debounce } from 'react-throttle';
 
 class SearchBooks extends Component {
   state = {
+    books: [],
     query: '',
-    books: []
+  }
+
+  static propTypes = {
+    onChangeShelf: PropTypes.func.isRequired
   }
 
   updateQuery = (query) => {
@@ -26,21 +32,16 @@ class SearchBooks extends Component {
     }
   }
 
+  onChangeShelf = (book, shelf) => {
+    if (typeof this.props.onChangeShelf === 'function') {
+      this.props.onChangeShelf(book, shelf);
+    }
+  }
+
   showBooks = () => {
     if (this.state.books.length > 0) {
       return
     }
-  }
-
-  onChangeShelf = (book, shelf) => {
-    var foundIndex = this.state.books.findIndex(x => x.id === book.id)
-    this.state.books[foundIndex].shelf = shelf
-
-    this.setState((state) => ({
-      books: state.books
-    }))
-
-    BooksAPI.update(book, shelf);
   }
 
   render() {
@@ -51,10 +52,12 @@ class SearchBooks extends Component {
         <div className="search-books-bar">
           <Link className='close-search' to='/'>Close</Link>
           <div className="search-books-input-wrapper">
-            <input type="text"
-            placeholder="Search by title or author"
-            value={query}
-            onChange={(event) => this.updateQuery(event.target.value)}/>
+            <Debounce time="1000" handler="onChange">
+              <input type="text"
+              placeholder="Search by title or author"
+              value={query}
+              onChange={(event) => this.updateQuery(event.target.value)}/>
+          </Debounce>
           </div>
         </div>
         <div className="search-books-results">

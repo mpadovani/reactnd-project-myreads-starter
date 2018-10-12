@@ -1,31 +1,17 @@
 import React, { Component } from 'react';
 import BooksGrid from './BooksGrid'
-import * as BooksAPI from './utils/BooksAPI'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types';
 
 class ListBooks extends Component {
-  state = {
-    books: []
-  }
-
-  componentDidMount() {
-    BooksAPI.getAll().then((books) => {
-      this.setState({ books })
-    })
-  }
-
-  onChangeShelf = (book, shelf) => {
-    var foundIndex = this.state.books.findIndex(x => x.id === book.id)
-    this.state.books[foundIndex].shelf = shelf
-
-    this.setState((state) => ({
-      books: state.books
-    }))
-
-    BooksAPI.update(book, shelf);
+  static propTypes = {
+    books: PropTypes.array.isRequired,
+    onChangeShelf: PropTypes.func.isRequired
   }
 
   render() {
+    const { onChangeShelf, books } = this.props
+
     return (
         <div className="list-books">
           <div className="list-books-title">
@@ -35,24 +21,24 @@ class ListBooks extends Component {
           <div className="bookshelf">
             <h2 className="bookshelf-title">Currently Reading</h2>
             <div className="bookshelf-books">
-              <BooksGrid books={this.state.books.filter((book) => book.shelf === "currentlyReading")}
-                         onChangeShelf={this.onChangeShelf}/>
+              <BooksGrid books={books.filter((book) => book.shelf === "currentlyReading")}
+                         onChangeShelf={onChangeShelf}/>
             </div>
           </div>
 
           <div className="bookshelf">
             <h2 className="bookshelf-title">Want to Read</h2>
             <div className="bookshelf-books">
-              <BooksGrid books={this.state.books.filter((book) => book.shelf === "wantToRead")}
-                         onChangeShelf={this.onChangeShelf}/>
+              <BooksGrid books={books.filter((book) => book.shelf === "wantToRead")}
+                         onChangeShelf={onChangeShelf}/>
             </div>
           </div>
 
           <div className="bookshelf">
             <h2 className="bookshelf-title">Read</h2>
             <div className="bookshelf-books">
-              <BooksGrid books={this.state.books.filter((book) => book.shelf === "read")}
-                         onChangeShelf={this.onChangeShelf}/>
+              <BooksGrid books={books.filter((book) => book.shelf === "read")}
+                         onChangeShelf={onChangeShelf}/>
             </div>
           </div>
 

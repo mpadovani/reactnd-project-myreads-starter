@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
-class BooksGrid extends Component {
+class BooksGrid extends PureComponent {
   static propTypes = {
     books: PropTypes.array.isRequired,
     onChangeShelf: PropTypes.func.isRequired
@@ -33,7 +33,6 @@ class BooksGrid extends Component {
               </div>
             </li>
           ))}
-
       </ol>
     )
   }
