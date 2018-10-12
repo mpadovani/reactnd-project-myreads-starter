@@ -29,7 +29,7 @@ class BooksGrid extends PureComponent {
                     </div>
                   <div className="book-shelf-changer">
                     <select key={book.id} onChange={(e) => onChangeShelf(book, e.target.value)}
-                      value={(book.shelf) ? book.shelf : ""}>
+                      value={(book.shelf) ? book.shelf : 'none'}>
                       <option value="move" disabled>Move to...</option>
                       <option value="currentlyReading">Currently Reading</option>
                       <option value="wantToRead">Want to Read</option>
