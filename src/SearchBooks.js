@@ -18,24 +18,21 @@ class SearchBooks extends Component {
   updateQuery = (query) => {
     this.setState({ query: query.trim() })
 
-    if (query.length > 2) {
-      BooksAPI.search(query).then((books) => {
-        if (books.error) {
-          this.setState({ books: [] })
-          return
-        }
-        console.log(books)
-        this.setState({ books: books })
-      }).catch(function(error){
-        console.log(error);
-      });
-    }
-  }
-
-  showBooks = () => {
-    if (this.state.books.length > 0) {
+    if (query.length == 0) {
+      this.setState({ books: [] })
       return
     }
+
+    BooksAPI.search(query).then((books) => {
+      if (books.error) {
+        this.setState({ books: [] })
+        return
+      }
+
+      this.setState({ books: books })
+    }).catch(function(error){
+      console.log(error);
+    });
   }
 
   render() {
@@ -47,7 +44,7 @@ class SearchBooks extends Component {
         <div className="search-books-bar">
           <Link className='close-search' to='/'>Close</Link>
           <div className="search-books-input-wrapper">
-            <Debounce time="1000" handler="onChange">
+            <Debounce time="500" handler="onChange">
               <input type="text"
               placeholder="Search by title or author"
               value={query}
