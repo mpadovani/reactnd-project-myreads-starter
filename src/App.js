@@ -9,21 +9,24 @@ class App extends Component {
     books: []
   }
 
-  componentDidMount() {
-    BooksAPI.getAll().then((books) => {
-      this.setState({ books })
-    })
+  async componentDidMount() {
+    const books = await BooksAPI.getAll()
+
+    this.setState({ books })
   }
 
   onChangeShelf = (book, shelf) => {
-    var foundIndex = this.state.books.findIndex(x => x.id === book.id)
-    this.state.books[foundIndex].shelf = shelf
+    // var foundIndex = this.state.books.findIndex(x => x.id === book.id)
+    // this.state.books[foundIndex].shelf = shelf
+    //
+    // this.setState((state) => ({
+    //   books: state.books
+    // }))
 
-    this.setState((state) => ({
-      books: state.books
-    }))
 
-    BooksAPI.update(book, shelf);
+    console.log(book);
+    console.log(shelf);
+    //BooksAPI.update(book, shelf);
   }
 
   render() {

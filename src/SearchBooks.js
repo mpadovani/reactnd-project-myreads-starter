@@ -32,12 +32,6 @@ class SearchBooks extends Component {
     }
   }
 
-  onChangeShelf = (book, shelf) => {
-    if (typeof this.props.onChangeShelf === 'function') {
-      this.props.onChangeShelf(book, shelf);
-    }
-  }
-
   showBooks = () => {
     if (this.state.books.length > 0) {
       return
@@ -46,6 +40,7 @@ class SearchBooks extends Component {
 
   render() {
     const { query } = this.state.query
+    const { onChangeShelf } = this.props
 
     return (
       <div className="search-books">
@@ -61,7 +56,7 @@ class SearchBooks extends Component {
           </div>
         </div>
         <div className="search-books-results">
-        <BooksGrid books={this.state.books} onChangeShelf={this.onChangeShelf}/>
+          <BooksGrid books={this.state.books} onChangeShelf={onChangeShelf}/>
         </div>
       </div>
     )
