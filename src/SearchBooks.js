@@ -4,6 +4,7 @@ import * as BooksAPI from './utils/BooksAPI'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import { Debounce } from 'react-throttle';
+import { unionWith, eqBy, prop } from 'ramda'
 
 class SearchBooks extends Component {
   state = {
@@ -12,13 +13,14 @@ class SearchBooks extends Component {
   }
 
   static propTypes = {
-    onChangeShelf: PropTypes.func.isRequired
+    onChangeShelf: PropTypes.func.isRequired,
+    myBooks: PropTypes.array.isRequired
   }
 
   updateQuery = (query) => {
     this.setState({ query: query.trim() })
 
-    if (query.length == 0) {
+    if (query.length === 0) {
       this.setState({ books: [] })
       return
     }
@@ -29,7 +31,13 @@ class SearchBooks extends Component {
         return
       }
 
-      this.setState({ books: books })
+      const filterMyBooks = this.props.myBooks.filter((book) => {
+        return books.some(function(myBook){
+          return book.id === myBook.id;
+        });
+      })
+
+      this.setState( { books: unionWith(eqBy(prop('id')), filterMyBooks, books) } )
     }).catch(function(error){
       console.log(error);
     });

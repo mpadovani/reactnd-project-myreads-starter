@@ -3,30 +3,53 @@ import { Route } from 'react-router-dom'
 import ListBooks from './ListBooks'
 import SearchBooks from './SearchBooks'
 import * as BooksAPI from './utils/BooksAPI'
+import { unionWith, eqBy, prop } from 'ramda'
 
 class App extends Component {
   state = {
-    books: []
+    myBooks: []
   }
 
   async componentDidMount() {
-    const books = await BooksAPI.getAll()
+    const myBooks = await BooksAPI.getAll()
 
-    this.setState({ books })
+    this.setState({ myBooks })
   }
 
   onChangeShelf = (book, shelf) => {
-    // var foundIndex = this.state.books.findIndex(x => x.id === book.id)
-    // this.state.books[foundIndex].shelf = shelf
-    //
-    // this.setState((state) => ({
-    //   books: state.books
-    // }))
+    book.shelf = shelf
 
+    if (shelf === "none") {
+      this.removeBook(book)
+      return
+    }
 
-    console.log(book);
-    console.log(shelf);
-    //BooksAPI.update(book, shelf);
+    const found = this.state.myBooks.some(function (myBook) {
+      return myBook.id === book.id;
+    });
+
+    (!found) ? this.addBook(book) : this.updateBookShelf(book)
+
+    BooksAPI.update(book, shelf);
+  }
+
+  updateBookShelf = (book) => {
+    this.setState((state) => ({
+      books: unionWith(eqBy(prop('id')), book, state.myBooks)
+    }))
+  }
+
+  addBook = (book) => {
+    this.setState(state => ({
+      myBooks: state.myBooks.concat([ book ])
+    }))
+
+  }
+
+  removeBook = (book) => {
+    this.setState((state) => ({
+      myBooks: state.myBooks.filter((myBook) => myBook.id !== book.id)
+    }))
   }
 
   render() {
@@ -35,12 +58,13 @@ class App extends Component {
         <Route exact path='/' render={() => (
           <ListBooks
             onChangeShelf={this.onChangeShelf}
-            books={this.state.books}
+            myBooks={this.state.myBooks}
           />
         )}/>
         <Route path='/search' render={({ history }) => (
             <SearchBooks
               onChangeShelf={this.onChangeShelf}
+              myBooks={this.state.myBooks}
             />
         )}/>
       </div>

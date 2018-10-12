@@ -5,12 +5,12 @@ import PropTypes from 'prop-types';
 
 class ListBooks extends Component {
   static propTypes = {
-    books: PropTypes.array.isRequired,
+    myBooks: PropTypes.array.isRequired,
     onChangeShelf: PropTypes.func.isRequired
   }
 
   render() {
-    const { onChangeShelf, books } = this.props
+    const { onChangeShelf, myBooks } = this.props
 
     return (
         <div className="list-books">
@@ -21,7 +21,7 @@ class ListBooks extends Component {
           <div className="bookshelf">
             <h2 className="bookshelf-title">Currently Reading</h2>
             <div className="bookshelf-books">
-              <BooksGrid books={books.filter((book) => book.shelf === "currentlyReading")}
+              <BooksGrid books={myBooks.filter((book) => book.shelf === "currentlyReading")}
                          onChangeShelf={onChangeShelf}/>
             </div>
           </div>
@@ -29,7 +29,7 @@ class ListBooks extends Component {
           <div className="bookshelf">
             <h2 className="bookshelf-title">Want to Read</h2>
             <div className="bookshelf-books">
-              <BooksGrid books={books.filter((book) => book.shelf === "wantToRead")}
+              <BooksGrid books={myBooks.filter((book) => book.shelf === "wantToRead")}
                          onChangeShelf={onChangeShelf}/>
             </div>
           </div>
@@ -37,7 +37,7 @@ class ListBooks extends Component {
           <div className="bookshelf">
             <h2 className="bookshelf-title">Read</h2>
             <div className="bookshelf-books">
-              <BooksGrid books={books.filter((book) => book.shelf === "read")}
+              <BooksGrid books={myBooks.filter((book) => book.shelf === "read")}
                          onChangeShelf={onChangeShelf}/>
             </div>
           </div>
