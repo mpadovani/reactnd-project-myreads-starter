@@ -1,24 +1,48 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import { unionWith, eqBy, prop } from 'ramda';
 
-class BooksGrid extends Component {
+class BooksGrid extends PureComponent {
+  state = {
+    books: this.props.books
+  }
+
   static propTypes = {
     books: PropTypes.array.isRequired,
     onChangeShelf: PropTypes.func.isRequired
   }
 
-  render() {
-    const { onChangeShelf } = this.props
+  showStyle = (book) => {
+    if (!book.imageLinks) {
+      return { 'width': 128, 'height': 193 }
+    }
 
+    return { 'width': 128, 'height': 193, 'backgroundImage': `url(${book.imageLinks.thumbnail})` }
+  }
+
+  onChangeShelf = (book, shelf) => {
+    book.shelf = shelf;
+
+
+    this.setState((state) => ({
+      books: unionWith(eqBy(prop('id')), book, state.books)
+    }))
+
+    this.props.onChangeShelf(book, shelf);
+  }
+
+  render() {
     return (
       <ol className="books-grid">
          {this.props.books.map((book) => (
             <li key={book.id}>
               <div className="book">
                 <div className="book-top">
-                  <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
+                  <div className="book-cover"
+                        style={this.showStyle(book)}>
+                    </div>
                   <div className="book-shelf-changer">
-                    <select key={book.id} onChange={(e) => onChangeShelf(book, e.target.value)}
+                    <select key={book.id} onChange={(e) => this.onChangeShelf(book, e.target.value)}
                       value={(book.shelf) ? book.shelf : 'none'}>
                       <option value="move" disabled>Move to...</option>
                       <option value="currentlyReading">Currently Reading</option>
@@ -33,7 +57,6 @@ class BooksGrid extends Component {
               </div>
             </li>
           ))}
-
       </ol>
     )
   }

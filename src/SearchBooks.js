@@ -2,63 +2,66 @@ import React, { Component } from 'react';
 import BooksGrid from './BooksGrid'
 import * as BooksAPI from './utils/BooksAPI'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types';
+import { Debounce } from 'react-throttle';
+import { unionWith, eqBy, prop } from 'ramda'
 
 class SearchBooks extends Component {
   state = {
+    books: [],
     query: '',
-    books: []
+  }
+
+  static propTypes = {
+    onChangeShelf: PropTypes.func.isRequired,
+    myBooks: PropTypes.array.isRequired
   }
 
   updateQuery = (query) => {
     this.setState({ query: query.trim() })
 
-    if (query.length > 2) {
-      BooksAPI.search(query).then((books) => {
-        if (books.error) {
-          this.setState({ books: [] })
-          return
-        }
-        console.log(books)
-        this.setState({ books: books })
-      }).catch(function(error){
-        console.log(error);
-      });
-    }
-  }
-
-  showBooks = () => {
-    if (this.state.books.length > 0) {
+    if (query.length === 0) {
+      this.setState({ books: [] })
       return
     }
-  }
 
-  onChangeShelf = (book, shelf) => {
-    var foundIndex = this.state.books.findIndex(x => x.id === book.id)
-    this.state.books[foundIndex].shelf = shelf
+    BooksAPI.search(query).then((books) => {
+      if (books.error) {
+        this.setState({ books: [] })
+        return
+      }
 
-    this.setState((state) => ({
-      books: state.books
-    }))
+      const filterMyBooks = this.props.myBooks.filter((book) => {
+        return books.some(function(myBook){
+          return book.id === myBook.id;
+        });
+      })
 
-    BooksAPI.update(book, shelf);
+      this.setState( { books: unionWith(eqBy(prop('id')), filterMyBooks, books) } )
+    }).catch(function(error){
+      console.log(error);
+    });
   }
 
   render() {
     const { query } = this.state.query
+    const { onChangeShelf } = this.props
 
     return (
       <div className="search-books">
         <div className="search-books-bar">
           <Link className='close-search' to='/'>Close</Link>
           <div className="search-books-input-wrapper">
-            <input type="text"
-            placeholder="Search by title or author"
-            value={query}
-            onChange={(event) => this.updateQuery(event.target.value)}/>
+            <Debounce time="500" handler="onChange">
+              <input type="text"
+              placeholder="Search by title or author"
+              value={query}
+              onChange={(event) => this.updateQuery(event.target.value)}/>
+          </Debounce>
           </div>
         </div>
         <div className="search-books-results">
-        <BooksGrid books={this.state.books} onChangeShelf={this.onChangeShelf}/>
+          <BooksGrid books={this.state.books} onChangeShelf={onChangeShelf}/>
         </div>
       </div>
     )
