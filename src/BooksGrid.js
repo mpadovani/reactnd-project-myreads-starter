@@ -1,7 +1,12 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import { unionWith, eqBy, prop } from 'ramda';
 
 class BooksGrid extends PureComponent {
+  state = {
+    books: this.props.books
+  }
+
   static propTypes = {
     books: PropTypes.array.isRequired,
     onChangeShelf: PropTypes.func.isRequired
@@ -15,9 +20,18 @@ class BooksGrid extends PureComponent {
     return { 'width': 128, 'height': 193, 'backgroundImage': `url(${book.imageLinks.thumbnail})` }
   }
 
-  render() {
-    const { onChangeShelf } = this.props
+  onChangeShelf = (book, shelf) => {
+    book.shelf = shelf;
 
+
+    this.setState((state) => ({
+      books: unionWith(eqBy(prop('id')), book, state.books)
+    }))
+
+    this.props.onChangeShelf(book, shelf);
+  }
+
+  render() {
     return (
       <ol className="books-grid">
          {this.props.books.map((book) => (
@@ -28,7 +42,7 @@ class BooksGrid extends PureComponent {
                         style={this.showStyle(book)}>
                     </div>
                   <div className="book-shelf-changer">
-                    <select key={book.id} onChange={(e) => onChangeShelf(book, e.target.value)}
+                    <select key={book.id} onChange={(e) => this.onChangeShelf(book, e.target.value)}
                       value={(book.shelf) ? book.shelf : 'none'}>
                       <option value="move" disabled>Move to...</option>
                       <option value="currentlyReading">Currently Reading</option>
